@@ -5,7 +5,6 @@ from torchvision.models.detection import fasterrcnn_resnet50_fpn_v2, FasterRCNN_
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.utils import draw_bounding_boxes
 from torchvision.transforms.functional import to_pil_image
-from ignite.engine import Engine
 from picsellia_utils import (
     get_picsellia_client,
     checkout_project,

@@ -10,6 +10,7 @@ from picsellia import Client
 from picsellia.sdk.project import Project as PicselliaProject
 from picsellia.sdk.experiment import Experiment as PicselliaExperiment
 from picsellia.sdk.dataset_version import DatasetVersion as PicselliaDatasetVersion
+from picsellia.sdk.deployment import Deployment as DeployedPicselliaModel
 import tqdm 
 import platform 
 import albumentations as A
@@ -22,7 +23,7 @@ from albumentations.pytorch import ToTensorV2
 
 
 def get_picsellia_client(organization_name: str = None) -> Client:
-    api_token = os.environ.get("PICSELLIA_TOKEN", "ffc032da4498dc2e3ae3853bca9a98b0db24baf7")
+    api_token = os.environ.get("PICSELLIA_TOKEN")
     if api_token is None:
         api_token = input("Please enter your TOKEN here :")
     return picsellia.Client(api_token=api_token, organization_name=organization_name)
@@ -31,6 +32,13 @@ def checkout_project(client: Client, project_name: str = None) -> PicselliaProje
     if project_name is None:
         project_name = input("Please enter your project_name here :")
     return client.get_project(project_name)
+
+def get_deployed_model(deployment_name: str = None) -> DeployedPicselliaModel:
+    deployment_name = os.environ.get("deployment_name")
+    if deployment_name is None:
+        deployment_name = input("Please enter your deployment_name here :")
+    return get_picsellia_client().get_deployment(deployment_name)
+
 
 def generate_new_experiment(project: PicselliaProject = None, visualize_valid: bool = False) -> PicselliaExperiment:
     """ 
