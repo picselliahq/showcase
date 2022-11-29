@@ -14,8 +14,6 @@ from picsellia.sdk.deployment import Deployment as DeployedPicselliaModel
 import tqdm 
 import platform 
 import albumentations as A
-import cv2
-import numpy as np
 import torch
 import matplotlib.pyplot as plt
 from albumentations.pytorch import ToTensorV2
@@ -40,7 +38,7 @@ def get_deployed_model(deployment_name: str = None) -> DeployedPicselliaModel:
     return get_picsellia_client().get_deployment(deployment_name)
 
 
-def generate_new_experiment(project: PicselliaProject = None, visualize_valid: bool = False) -> PicselliaExperiment:
+def generate_new_experiment(project: PicselliaProject = None, visualize_test: bool = False) -> PicselliaExperiment:
     """ 
     This utility function assume that you have at least 3 datasets in your project called
     ('train', 'test', 'valid'),
@@ -48,7 +46,7 @@ def generate_new_experiment(project: PicselliaProject = None, visualize_valid: b
        - Create a new experiment 
        - Attach the 3 datasets to this experiment
        - if verbose=True:
-            - Will create a fork of the validation set to display the predictions as annotations.
+            - Will create a fork of the test set to display the predictions as annotations.
     
     Returns:
         PicselliaExperiment Object
@@ -70,10 +68,10 @@ def generate_new_experiment(project: PicselliaProject = None, visualize_valid: b
     experiment.attach_dataset(name="test", dataset_version=test_dataset)
     experiment.attach_dataset(name="valid", dataset_version=valid_dataset)
 
-    if visualize_valid: # We will generate a fork of the validation dataset to store the predictions and vizualize them
-        valid_dataset_prediction, job = valid_dataset.fork(version=f"valid - prediction - {experiment.name}", assets=valid_dataset.list_assets(), type=valid_dataset.type)
+    if visualize_test: # We will generate a fork of the validation dataset to store the predictions and vizualize them
+        test_dataset_prediction, job = valid_dataset.fork(version=f"test - prediction - {experiment.name}", assets=valid_dataset.list_assets(), type=valid_dataset.type)
         job.wait_for_done()
-        experiment.attach_dataset(name="valid-prediction", dataset_version=valid_dataset_prediction)
+        experiment.attach_dataset(name="test-prediction", dataset_version=test_dataset_prediction)
     return experiment
 
 def get_train_test_valid_datasets(experiment: PicselliaExperiment) -> Tuple[PicselliaDatasetVersion]:
